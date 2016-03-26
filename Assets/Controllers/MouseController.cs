@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine.EventSystems;
 
@@ -8,9 +8,12 @@ public class MouseController : MonoBehaviour {
     Vector2 lastPos;
     Sprite previewSprite = null;
     public GameObject previewGO;
+    public GameObject previewPrefab;
     int mode = 0; // 0 = nothing, 1 = tile, 2 = furnature
     TileType type = TileType.Space;
     Vector2 initialDragPos;
+    bool dragging = false;
+    List<GameObject> previewGameObjects = new List<GameObject>();
 
 	// Use this for initialization
 	void Start () {
@@ -67,21 +70,46 @@ public class MouseController : MonoBehaviour {
                 initialDragPos = currentPos;
             }
         }
-        else if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        else if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
             if (mode == 1)
             {
                 int dx = 1;
                 if (initialDragPos.x > currentPos.x)
                     dx = -1;
-                for (int x = (int)initialDragPos.x; x != (int)currentPos.x+dx; x += dx)
+                for (int x = (int)initialDragPos.x; x != (int)currentPos.x + dx; x += dx)
                 {
                     int dy = 1;
                     if (initialDragPos.y > currentPos.y)
                         dy = -1;
-                    for (int y = (int)initialDragPos.y; y != (int)currentPos.y+dy; y += dy) {
-                    Tile t = WorldController.instance.world.getTileAt(x, y);
-                    if (t != null)
-                        t.Type = type;
+                    for (int y = (int)initialDragPos.y; y != (int)currentPos.y + dy; y += dy)
+                    {
+                        Tile t = WorldController.instance.world.getTileAt(x, y);
+                        if (t != null)
+                            t.Type = type;
+                    }
+                }
+            }
+        }
+        else if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()) {
+            if (mode == 1) {
+                while (previewGameObjects.Count > 0) {
+                    SimplePool.Despawn(previewGameObjects[0]);
+                    previewGameObjects.RemoveAt(0);
+                }
+                int dx = 1;
+                if (initialDragPos.x > currentPos.x)
+                    dx = -1;
+                for (int x = (int)initialDragPos.x; x != (int)currentPos.x + dx; x += dx)
+                {
+                    int dy = 1;
+                    if (initialDragPos.y > currentPos.y)
+                        dy = -1;
+                    for (int y = (int)initialDragPos.y; y != (int)currentPos.y + dy; y += dy)
+                    {
+                        GameObject go = SimplePool.Spawn(previewPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                        go.GetComponent<SpriteRenderer>().sprite = previewSprite;
+                        previewGameObjects.Add(go);
                     }
                 }
             }
