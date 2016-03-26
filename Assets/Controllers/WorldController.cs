@@ -3,12 +3,13 @@ using System.Collections;
 
 public class WorldController : MonoBehaviour {
 
-    World world;
+    public World world;
     bool init = false;
+    public static WorldController instance;
 
 	// Use this for initialization
 	void Start () {
-        
+        instance = this;
 	}
 	
 	// Update is called once per frame

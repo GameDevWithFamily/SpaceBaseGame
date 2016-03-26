@@ -53,6 +53,17 @@ public class MouseController : MonoBehaviour {
             previewGO.GetComponent<SpriteRenderer>().sprite = previewSprite;
             previewGO.transform.position = new Vector3(Mathf.FloorToInt(currentPos.x), Mathf.FloorToInt(currentPos.y));
         //}
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (mode == 1)
+            {
+                int x = Mathf.FloorToInt(currentPos.x);
+                int y = Mathf.FloorToInt(currentPos.y);
+                Tile t = WorldController.instance.world.getTileAt(x, y);
+                if (t != null)
+                    t.Type = type;
+            }
+        }
 
 	}
 }
