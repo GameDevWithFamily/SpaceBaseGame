@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.EventSystems;
 
 public class MouseController : MonoBehaviour {
 
@@ -9,6 +10,7 @@ public class MouseController : MonoBehaviour {
     public GameObject previewGO;
     int mode = 0; // 0 = nothing, 1 = tile, 2 = furnature
     TileType type = TileType.Space;
+    Vector2 initialDragPos;
 
 	// Use this for initialization
 	void Start () {
@@ -49,19 +51,39 @@ public class MouseController : MonoBehaviour {
         Camera.main.orthographicSize -= Input.mouseScrollDelta.y;
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3, 20);
 
-        //if (previewSprite != null) {
+        if (mode == 0)
+        {
+            previewGO.GetComponent<SpriteRenderer>().sprite = null;
+        }
+        else if (mode == 1) {
             previewGO.GetComponent<SpriteRenderer>().sprite = previewSprite;
             previewGO.transform.position = new Vector3(Mathf.FloorToInt(currentPos.x), Mathf.FloorToInt(currentPos.y));
-        //}
-        if (Input.GetMouseButtonDown(0))
+        }
+
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             if (mode == 1)
             {
-                int x = Mathf.FloorToInt(currentPos.x);
-                int y = Mathf.FloorToInt(currentPos.y);
-                Tile t = WorldController.instance.world.getTileAt(x, y);
-                if (t != null)
-                    t.Type = type;
+                initialDragPos = currentPos;
+            }
+        }
+        else if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject()) {
+            if (mode == 1)
+            {
+                int dx = 1;
+                if (initialDragPos.x > currentPos.x)
+                    dx = -1;
+                for (int x = (int)initialDragPos.x; x != (int)currentPos.x+dx; x += dx)
+                {
+                    int dy = 1;
+                    if (initialDragPos.y > currentPos.y)
+                        dy = -1;
+                    for (int y = (int)initialDragPos.y; y != (int)currentPos.y+dy; y += dy) {
+                    Tile t = WorldController.instance.world.getTileAt(x, y);
+                    if (t != null)
+                        t.Type = type;
+                    }
+                }
             }
         }
 
