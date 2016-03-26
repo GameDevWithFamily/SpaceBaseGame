@@ -5,7 +5,7 @@ public class SpriteController : MonoBehaviour {
 
     public static SpriteController instance;
     Dictionary<Tile, GameObject> gameObjects;
-    Dictionary<string, Sprite> sprites;
+    public Dictionary<string, Sprite> sprites;
 
 	// Use this for initialization
 	void Start () {

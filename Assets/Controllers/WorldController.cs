@@ -4,15 +4,19 @@ using System.Collections;
 public class WorldController : MonoBehaviour {
 
     World world;
+    bool init = false;
 
 	// Use this for initialization
 	void Start () {
-        world = new World();
-        world.initializeTiles();
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if (!init) {
+            world = new World();
+            world.initializeTiles();
+            init = true;
+        }
 	}
 }
