@@ -42,4 +42,12 @@ public class World {
         }
     }
 
+    public Tile getTileAt(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            Debug.LogError("getTileAt - Tried to access tile out of range");
+            return null;
+        }
+        return tiles[x, y];
+    }
+
 }
